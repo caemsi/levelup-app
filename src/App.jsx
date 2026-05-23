@@ -92,6 +92,7 @@ const QUOTES = [
   { text:'Dein zukünftiges Ich schaut auf dich. Mach es stolz.', author:'Unbekannt' },
   { text:'Kleine tägliche Verbesserungen führen zu atemberaubenden Langzeitergebnissen.', author:'Robin Sharma' },
   { text:'Die Qualität deines Lebens ist die Qualität deiner täglichen Gewohnheiten.', author:'Unbekannt' },
+  { text:'Your only limit is you.', author:'Unbekannt' },
 ]
 
 const GENT_TIPS = [
