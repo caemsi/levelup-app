@@ -1,7 +1,27 @@
 import { useState, useEffect, useMemo } from 'react'
+import phoenixLogo from './assets/PhoenixLogo.png'
 
+// ── Theme ─────────────────────────────────────────────────────────────────────
+const C = {
+  bg:        '#0e1117',
+  bgCard:    '#161b27',
+  bgCard2:   '#1c2333',
+  border:    '#252d3d',
+  borderHL:  '#c9a84c',
+  gold:      '#c9a84c',
+  goldDim:   '#a07c30',
+  teal:      '#1a7a5e',
+  tealLight: '#22a67e',
+  navy:      '#1a2744',
+  textPri:   '#f0f0f0',
+  textSec:   '#8a9bb5',
+  textDim:   '#4a5568',
+  red:       '#e74c3c',
+}
+
+// ── Data ──────────────────────────────────────────────────────────────────────
 const LEVEL_TITLES = ['', 'Neuling', 'Aufsteiger', 'Kämpfer', 'Krieger', 'Legende']
-const LEVEL_ICONS  = ['', '🌱', '⚔️', '🔥', '💎', '👑']
+const LEVEL_ICONS  = ['', '🌱', '🔥', '⚔️', '💎', '👑']
 
 const PRESET_HABITS = [
   { id:'p1',  name:'30 Min. Sport',            sub:'Stärke +2',    xp:50,  stat:'str' },
@@ -65,12 +85,12 @@ const ALL_DAILY_QUESTS = [
   { id:'d13', title:'Kein Snacken abends',        desc:'Nach 19 Uhr nichts mehr essen.',                       icon:'🚫', xp:25 },
   { id:'d14', title:'Früher schlafen gehen',      desc:'Heute min. 30 Min. früher ins Bett als sonst.',       icon:'🌙', xp:20 },
   { id:'d15', title:'Tagesziel festlegen',        desc:'Schreib dein wichtigstes Ziel für heute auf.',        icon:'🎯', xp:15 },
-  { id:'d16', title:'1 Min. Plank',              desc:'Halte eine Plank für 60 Sekunden.',                    icon:'🔥', xp:25 },
-  { id:'d17', title:'Spaziergang (20 Min.)',      desc:'20 Minuten zu Fuß, ohne Destination.',                icon:'🚶', xp:20 },
-  { id:'d18', title:'Selbstreflexion (5 Min.)',   desc:'Sitz still, kein Handy, denke über deinen Tag nach.', icon:'💭', xp:20 },
-  { id:'d19', title:'Proteinreiches Essen',       desc:'Stell sicher dass du heute genug Protein isst.',      icon:'🥩', xp:15 },
-  { id:'d20', title:'Kaltes Wasser morgens',      desc:'Spritz dir kaltes Wasser ins Gesicht. Wach werden.',  icon:'🚿', xp:10 },
-  { id:'d21', title:'Etwas Inspirierendes lesen', desc:'10 Seiten Buch oder ein guter Artikel.',              icon:'📚', xp:15 },
+  { id:'d16', title:'1 Min. Plank',               desc:'Halte eine Plank für 60 Sekunden.',                   icon:'🔥', xp:25 },
+  { id:'d17', title:'Spaziergang (20 Min.)',       desc:'20 Minuten zu Fuß, ohne Destination.',                icon:'🚶', xp:20 },
+  { id:'d18', title:'Selbstreflexion (5 Min.)',    desc:'Sitz still, kein Handy, denke über deinen Tag nach.', icon:'💭', xp:20 },
+  { id:'d19', title:'Proteinreiches Essen',        desc:'Stell sicher dass du heute genug Protein isst.',      icon:'🥩', xp:15 },
+  { id:'d20', title:'Kaltes Wasser morgens',       desc:'Spritz dir kaltes Wasser ins Gesicht. Wach werden.',  icon:'🚿', xp:10 },
+  { id:'d21', title:'Etwas Inspirierendes lesen',  desc:'10 Seiten Buch oder ein guter Artikel.',              icon:'📚', xp:15 },
 ]
 
 const QUOTES = [
@@ -92,18 +112,17 @@ const QUOTES = [
   { text:'Dein zukünftiges Ich schaut auf dich. Mach es stolz.', author:'Unbekannt' },
   { text:'Kleine tägliche Verbesserungen führen zu atemberaubenden Langzeitergebnissen.', author:'Robin Sharma' },
   { text:'Die Qualität deines Lebens ist die Qualität deiner täglichen Gewohnheiten.', author:'Unbekannt' },
-  { text:'Your only limit is you.', author:'Unbekannt' },
 ]
 
 const GENT_TIPS = [
-  { icon:'👔', title:'Kleidung mit Absicht',    body:'Ein Gentleman trägt keine Marken um zu beeindrucken. Er kleidet sich angemessen für den Ort und die Situation.' },
-  { icon:'👂', title:'Aktiv zuhören',           body:'Die stärkste Fähigkeit im Gespräch: wirklich zuhören, nicht nur warten bis man selbst reden kann.' },
-  { icon:'✋', title:'Grenzen setzen',          body:'Nein sagen ist keine Schwäche. Ein Mann mit klaren Grenzen wird mehr respektiert als einer der zu allem Ja sagt.' },
-  { icon:'🤝', title:'Wort halten',             body:'Versprich wenig und halte viel. Verlässlichkeit ist das wichtigste Kapital eines Mannes.' },
-  { icon:'📱', title:'Handy wegstecken',        body:'Im Gespräch das Handy weglegen. Diese einfache Geste zeigt mehr Respekt als jede Höflichkeit.' },
-  { icon:'🪞', title:'Tägliche Selbstreflexion',body:'Nimm dir jeden Abend 5 Minuten. Was lief gut? Was besser? Wer reflektiert, wächst.' },
-  { icon:'💬', title:'Weniger reden, mehr tun', body:'Ankündigungen beeindrucken niemanden. Resultate schon. Lass deine Taten sprechen.' },
-  { icon:'🧭', title:'Eigene Werte kennen',     body:'Wer seine Werte nicht kennt lässt sich von jedem führen. Definiere was dir wichtig ist und lebe danach.' },
+  { icon:'👔', title:'Kleidung mit Absicht',     body:'Ein Gentleman trägt keine Marken um zu beeindrucken. Er kleidet sich angemessen für den Ort und die Situation.' },
+  { icon:'👂', title:'Aktiv zuhören',            body:'Die stärkste Fähigkeit im Gespräch: wirklich zuhören, nicht nur warten bis man selbst reden kann.' },
+  { icon:'✋', title:'Grenzen setzen',           body:'Nein sagen ist keine Schwäche. Ein Mann mit klaren Grenzen wird mehr respektiert als einer der zu allem Ja sagt.' },
+  { icon:'🤝', title:'Wort halten',              body:'Versprich wenig und halte viel. Verlässlichkeit ist das wichtigste Kapital eines Mannes.' },
+  { icon:'📱', title:'Handy wegstecken',         body:'Im Gespräch das Handy weglegen. Diese einfache Geste zeigt mehr Respekt als jede Höflichkeit.' },
+  { icon:'🪞', title:'Tägliche Selbstreflexion', body:'Nimm dir jeden Abend 5 Minuten. Was lief gut? Was besser? Wer reflektiert, wächst.' },
+  { icon:'💬', title:'Weniger reden, mehr tun',  body:'Ankündigungen beeindrucken niemanden. Resultate schon. Lass deine Taten sprechen.' },
+  { icon:'🧭', title:'Eigene Werte kennen',      body:'Wer seine Werte nicht kennt lässt sich von jedem führen. Definiere was dir wichtig ist und lebe danach.' },
 ]
 
 const PEACE_TIPS = [
@@ -117,6 +136,7 @@ const PEACE_TIPS = [
   { icon:'🤍', title:'Selbstmitgefühl',        body:'Du machst Fehler. Das ist menschlich. Behandle dich so wie du einen guten Freund behandeln würdest.' },
 ]
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function loadState() {
   try { const r = localStorage.getItem('levelup_v3'); return r ? JSON.parse(r) : null } catch { return null }
 }
@@ -143,47 +163,62 @@ function initialState() {
 }
 
 const DIFF_LABEL = { easy:'Leicht', medium:'Mittel', hard:'Schwer' }
-const DIFF_COLOR = { easy:'#E1F5EE', medium:'#FAEEDA', hard:'#FAECE7' }
-const DIFF_TEXT  = { easy:'#085041', medium:'#633806', hard:'#712B13' }
+const DIFF_BG    = { easy:'rgba(26,122,94,0.2)',  medium:'rgba(201,168,76,0.2)',  hard:'rgba(231,76,60,0.2)'  }
+const DIFF_TEXT  = { easy:'#22a67e',              medium:'#c9a84c',               hard:'#e74c3c'               }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
 const S = {
-  card:      { background:'#fff', border:'0.5px solid #ebebeb', borderRadius:14, padding:'1rem 1.25rem', marginBottom:10 },
-  cardHL:    { background:'#fff', border:'1.5px solid #AFA9EC', borderRadius:14, padding:'1rem 1.25rem', marginBottom:10 },
-  secTitle:  { fontSize:11, fontWeight:600, color:'#aaa', textTransform:'uppercase', letterSpacing:'.07em', margin:'1.2rem 0 .5rem' },
-  xpWrap:    { background:'#eeebff', borderRadius:99, height:8, overflow:'hidden' },
-  xpBar:     { height:'100%', borderRadius:99, background:'linear-gradient(90deg,#9B8FFF,#7F77DD)', transition:'width .5s ease' },
-  statBox:   { background:'#f7f7fb', borderRadius:10, padding:'8px 6px', textAlign:'center' },
-  habitRow:  { display:'flex', alignItems:'center', gap:10, padding:'9px 0', borderBottom:'0.5px solid #f5f5f5' },
-  chk:       { width:27, height:27, borderRadius:'50%', border:'1.5px solid #ddd', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, cursor:'pointer' },
-  chkOn:     { background:'linear-gradient(135deg,#9B8FFF,#7F77DD)', borderColor:'#7F77DD' },
-  progWrap:  { background:'#f0f0f0', borderRadius:99, height:5, overflow:'hidden' },
-  progBar:   { height:'100%', borderRadius:99, background:'linear-gradient(90deg,#9B8FFF,#7F77DD)', transition:'width .4s' },
-  bPurple:   { fontSize:11, color:'#3C3489', background:'#EEEDFE', padding:'2px 9px', borderRadius:99, fontWeight:500 },
-  bGreen:    { fontSize:11, color:'#085041', background:'#E1F5EE', padding:'2px 9px', borderRadius:99, fontWeight:500 },
-  empty:     { fontSize:13, color:'#ccc', textAlign:'center', padding:'1rem 0' },
-  input:     { width:'100%', padding:'9px 11px', border:'0.5px solid #e0e0e0', borderRadius:9, fontSize:13, fontFamily:'inherit', outline:'none', boxSizing:'border-box', background:'#fafafa' },
-  btnSm:     { padding:'5px 13px', fontSize:12, border:'0.5px solid #e0e0e0', borderRadius:8, background:'transparent', cursor:'pointer', fontFamily:'inherit' },
-  btnPri:    { background:'linear-gradient(135deg,#9B8FFF,#7F77DD)', color:'white', fontWeight:500, border:'none' },
-  btnActive: { background:'#EEEDFE', borderColor:'#AFA9EC', color:'#3C3489' },
-  btnDone:   { background:'#E1F5EE', borderColor:'#86CDB8', color:'#085041' },
-  modalBg:   { background:'rgba(0,0,0,0.35)', borderRadius:14, padding:'1rem', marginBottom:10 },
-  modalBox:  { background:'#fff', borderRadius:14, padding:'1.25rem' },
+  card:      { background:C.bgCard,  border:`1px solid ${C.border}`,   borderRadius:14, padding:'1rem 1.25rem', marginBottom:10 },
+  cardHL:    { background:C.bgCard,  border:`1px solid ${C.gold}`,     borderRadius:14, padding:'1rem 1.25rem', marginBottom:10 },
+  cardGoal:  { background:C.bgCard,  border:`1px solid ${C.border}`, borderLeft:`3px solid ${C.gold}`, borderRadius:14, padding:'1rem 1.25rem', marginBottom:10 },
+  secTitle:  { fontSize:11, fontWeight:600, color:C.textDim, textTransform:'uppercase', letterSpacing:'.1em', margin:'1.3rem 0 .6rem' },
+  xpWrap:    { background:'rgba(201,168,76,0.15)', borderRadius:99, height:6, overflow:'hidden' },
+  xpBar:     { height:'100%', borderRadius:99, background:`linear-gradient(90deg,${C.teal},${C.gold})`, transition:'width .5s ease' },
+  statBox:   { background:C.bgCard2, borderRadius:10, padding:'8px 6px', textAlign:'center', border:`1px solid ${C.border}` },
+  habitRow:  { display:'flex', alignItems:'center', gap:10, padding:'10px 0', borderBottom:`1px solid ${C.border}` },
+  chk:       { width:26, height:26, borderRadius:'50%', border:`1.5px solid ${C.border}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, cursor:'pointer', transition:'all .2s' },
+  chkOn:     { background:`linear-gradient(135deg,${C.teal},${C.gold})`, borderColor:C.gold },
+  progWrap:  { background:C.bgCard2, borderRadius:99, height:5, overflow:'hidden' },
+  progBar:   { height:'100%', borderRadius:99, background:`linear-gradient(90deg,${C.teal},${C.gold})`, transition:'width .4s' },
+  bGold:     { fontSize:11, color:C.gold, background:'rgba(201,168,76,0.15)', padding:'2px 9px', borderRadius:99, fontWeight:600 },
+  bTeal:     { fontSize:11, color:C.tealLight, background:'rgba(26,122,94,0.2)', padding:'2px 9px', borderRadius:99, fontWeight:500 },
+  empty:     { fontSize:13, color:C.textDim, textAlign:'center', padding:'1.2rem 0' },
+  input:     { width:'100%', padding:'9px 11px', border:`1px solid ${C.border}`, borderRadius:9, fontSize:13, fontFamily:'inherit', outline:'none', boxSizing:'border-box', background:C.bgCard2, color:C.textPri },
+  btnSm:     { padding:'5px 13px', fontSize:12, border:`1px solid ${C.border}`, borderRadius:8, background:'transparent', cursor:'pointer', fontFamily:'inherit', color:C.textSec },
+  btnPri:    { background:`linear-gradient(135deg,${C.teal},${C.goldDim})`, color:'white', fontWeight:600, border:'none' },
+  btnActive: { background:'rgba(201,168,76,0.15)', borderColor:C.gold, color:C.gold },
+  btnDone:   { background:'rgba(26,122,94,0.2)', borderColor:C.teal, color:C.tealLight },
+  modalBg:   { background:'rgba(0,0,0,0.7)', borderRadius:14, padding:'1rem', marginBottom:10 },
+  modalBox:  { background:C.bgCard, border:`1px solid ${C.border}`, borderRadius:14, padding:'1.25rem' },
 }
 
+// ── Phoenix SVG Logo ──────────────────────────────────────────────────────────
+function PhoenixLogo({ size = 150 }) {
+  return <img src={phoenixLogo} width={size} height={size} style={{ objectFit:'contain', mixBlendMode:'screen', filter:'contrast(1.1)' }} />
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
 function XPBar({ xp, maxXp, level, str, agi, foc, dis }) {
-  const pct = Math.min(Math.round(xp/maxXp*100),100)
+  const pct = Math.min(Math.round(xp/maxXp*100), 100)
+  const today = new Date().toLocaleDateString('de-AT', { weekday:'long', day:'numeric', month:'long' })
   return (
-    <div style={{ background:'linear-gradient(135deg,#F0EFFE,#EEF0FF)', borderRadius:14, padding:'1rem 1.25rem', marginBottom:10 }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+    <div style={{ background:`linear-gradient(135deg,${C.navy},#0e1a2e)`, borderRadius:16, padding:'1.25rem', marginBottom:12, border:`1px solid ${C.border}` }}>
+      <div style={{ fontSize:11, color:C.textDim, marginBottom:10, letterSpacing:'.05em' }}>{today.toUpperCase()}</div>
+      <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
+        <PhoenixLogo size={150} />
         <div>
-          <div style={{ fontSize:17, fontWeight:700 }}>{LEVEL_ICONS[level]} Level {level} · {LEVEL_TITLES[level]}</div>
-          <div style={{ fontSize:12, color:'#888', marginTop:2 }}>{xp} / {maxXp} XP</div>
+          <div style={{ fontSize:18, fontWeight:700, color:C.textPri }}>{LEVEL_ICONS[level]} Level {level} · {LEVEL_TITLES[level]}</div>
+          <div style={{ fontSize:12, color:C.gold, marginTop:2 }}>{xp} / {maxXp} XP</div>
         </div>
       </div>
       <div style={S.xpWrap}><div style={{ ...S.xpBar, width:pct+'%' }} /></div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:6, marginTop:12 }}>
         {[['⚔️',str,'Stärke'],['🏃',agi,'Ausdauer'],['🧠',foc,'Fokus'],['🛡️',dis,'Disziplin']].map(([icon,v,l])=>(
-          <div key={l} style={S.statBox}><div style={{ fontSize:14 }}>{icon}</div><div style={{ fontSize:16, fontWeight:700, marginTop:2 }}>{v}</div><div style={{ fontSize:10, color:'#aaa', marginTop:1 }}>{l}</div></div>
+          <div key={l} style={S.statBox}>
+            <div style={{ fontSize:14 }}>{icon}</div>
+            <div style={{ fontSize:17, fontWeight:700, marginTop:2, color:C.gold }}>{v}</div>
+            <div style={{ fontSize:10, color:C.textDim, marginTop:1 }}>{l}</div>
+          </div>
         ))}
       </div>
     </div>
@@ -192,19 +227,20 @@ function XPBar({ xp, maxXp, level, str, agi, foc, dis }) {
 
 function HabitRow({ habit, done, onCheck }) {
   return (
-    <div style={S.habitRow}>
+    <div style={{ ...S.habitRow, opacity: done ? 0.5 : 1 }}>
       <div onClick={!done ? onCheck : undefined} style={{ ...S.chk, ...(done?S.chkOn:{}), cursor:done?'default':'pointer' }}>
-        {done && <span style={{ color:'white', fontSize:13, fontWeight:700 }}>✓</span>}
+        {done && <span style={{ color:'white', fontSize:12, fontWeight:700 }}>✓</span>}
       </div>
       <div style={{ flex:1 }}>
-        <div style={{ fontSize:14, color:done?'#ccc':'#1a1a1a', textDecoration:done?'line-through':'none' }}>{habit.name}</div>
-        <div style={{ fontSize:11, color:'#ccc' }}>{habit.sub}</div>
+        <div style={{ fontSize:14, color:done?C.textDim:C.textPri, textDecoration:done?'line-through':'none' }}>{habit.name}</div>
+        <div style={{ fontSize:11, color:C.textDim, marginTop:1 }}>{habit.sub}</div>
       </div>
-      <span style={S.bPurple}>+{habit.xp} XP</span>
+      <span style={S.bGold}>+{habit.xp} XP</span>
     </div>
   )
 }
 
+// ── Pages ─────────────────────────────────────────────────────────────────────
 function PageToday({ state, allHabits, onCheck, activeQuests, onDailyDone, dailyQuests }) {
   const activeHabitObjects = allHabits.filter(h => state.activeHabits.includes(h.id))
   const openGoals = (state.goals||[]).filter(g => !g.done)
@@ -214,12 +250,13 @@ function PageToday({ state, allHabits, onCheck, activeQuests, onDailyDone, daily
       {openGoals.length > 0 && <>
         <div style={S.secTitle}>🎯 Meine Ziele</div>
         {openGoals.map(g => (
-          <div key={g.id} style={{ ...S.card, borderLeft:'3px solid #7F77DD' }}>
-            <div style={{ fontSize:14, fontWeight:500 }}>{g.text}</div>
-            {g.note && <div style={{ fontSize:12, color:'#888', marginTop:3 }}>{g.note}</div>}
+          <div key={g.id} style={S.cardGoal}>
+            <div style={{ fontSize:14, fontWeight:500, color:C.textPri }}>{g.text}</div>
+            {g.note && <div style={{ fontSize:12, color:C.textSec, marginTop:3 }}>{g.note}</div>}
           </div>
         ))}
       </>}
+
       <div style={S.secTitle}>✅ Heutige Habits</div>
       <div style={S.card}>
         {activeHabitObjects.length === 0
@@ -227,38 +264,40 @@ function PageToday({ state, allHabits, onCheck, activeQuests, onDailyDone, daily
           : activeHabitObjects.map(h => <HabitRow key={h.id} habit={h} done={state.doneTodayIds.includes(h.id)} onCheck={() => onCheck(h)} />)
         }
       </div>
+
       <div style={S.secTitle}>⚡ Daily Quests</div>
       <div style={S.card}>
         {dailyQuests.map(q => {
           const done = (state.doneDailyIds||[]).includes(q.id)
           return (
-            <div key={q.id} style={S.habitRow}>
+            <div key={q.id} style={{ ...S.habitRow, opacity:done?.5:1 }}>
               <span style={{ fontSize:20, flexShrink:0 }}>{q.icon}</span>
               <div style={{ flex:1 }}>
-                <div style={{ fontSize:14, color:done?'#ccc':'#1a1a1a', textDecoration:done?'line-through':'none' }}>{q.title}</div>
-                <div style={{ fontSize:11, color:'#ccc' }}>{q.desc}</div>
+                <div style={{ fontSize:14, color:done?C.textDim:C.textPri, textDecoration:done?'line-through':'none' }}>{q.title}</div>
+                <div style={{ fontSize:11, color:C.textDim, marginTop:1 }}>{q.desc}</div>
               </div>
-              <button onClick={() => !done && onDailyDone(q)} style={{ ...S.btnSm, ...(done?S.btnDone:{}) }}>
-                {done ? 'Erledigt ✓' : '+'+q.xp+' XP'}
+              <button onClick={() => !done && onDailyDone(q)} style={{ ...S.btnSm, ...(done?S.btnDone:{background:'rgba(201,168,76,0.1)',borderColor:C.goldDim,color:C.gold}) }}>
+                {done ? '✓ Done' : '+'+q.xp+' XP'}
               </button>
             </div>
           )
         })}
       </div>
+
       {activeQuests.length > 0 && <>
         <div style={S.secTitle}>⚔️ Aktive Quests</div>
         {activeQuests.map(q => (
           <div key={q.id} style={S.card}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:q.total>1?6:0 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:q.total>1?8:0 }}>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <span style={{ fontSize:16 }}>{q.icon}</span>
-                <span style={{ fontSize:14, fontWeight:500 }}>{q.title}</span>
+                <span style={{ fontSize:18 }}>{q.icon}</span>
+                <span style={{ fontSize:14, fontWeight:600, color:C.textPri }}>{q.title}</span>
               </div>
-              <span style={S.bPurple}>+{q.xp} XP</span>
+              <span style={S.bGold}>+{q.xp} XP</span>
             </div>
             {q.total>1 && <>
               <div style={S.progWrap}><div style={{ ...S.progBar, width:Math.round((q.prog||0)/q.total*100)+'%' }} /></div>
-              <div style={{ fontSize:11, color:'#aaa', marginTop:4 }}>{q.prog||0} / {q.total} Tage</div>
+              <div style={{ fontSize:11, color:C.textDim, marginTop:4 }}>{q.prog||0} / {q.total} Tage</div>
             </>}
           </div>
         ))}
@@ -286,8 +325,8 @@ function PageHabits({ state, onTogglePreset, onAddCustom, onDeleteCustom }) {
             <div key={h.id} style={S.habitRow}>
               <span style={{ fontSize:18, flexShrink:0 }}>{h.stat==='str'?'⚔️':h.stat==='agi'?'🏃':h.stat==='foc'?'🧠':'🛡️'}</span>
               <div style={{ flex:1 }}>
-                <div style={{ fontSize:14 }}>{h.name}</div>
-                <div style={{ fontSize:11, color:'#ccc' }}>{h.sub} · +{h.xp} XP</div>
+                <div style={{ fontSize:14, color:C.textPri }}>{h.name}</div>
+                <div style={{ fontSize:11, color:C.textDim }}>{h.sub} · +{h.xp} XP</div>
               </div>
               <button onClick={() => onTogglePreset(h.id)} style={{ ...S.btnSm, ...(active?S.btnActive:{}) }}>
                 {active ? 'Aktiv ✓' : 'Hinzufügen'}
@@ -296,6 +335,7 @@ function PageHabits({ state, onTogglePreset, onAddCustom, onDeleteCustom }) {
           )
         })}
       </div>
+
       <div style={S.secTitle}>Meine Habits</div>
       <div style={S.card}>
         {state.customHabits.length === 0
@@ -303,17 +343,18 @@ function PageHabits({ state, onTogglePreset, onAddCustom, onDeleteCustom }) {
           : state.customHabits.map(h => (
             <div key={h.id} style={S.habitRow}>
               <div style={{ flex:1 }}>
-                <div style={{ fontSize:14 }}>{h.name}</div>
-                <div style={{ fontSize:11, color:'#ccc' }}>{h.sub} · +{h.xp} XP</div>
+                <div style={{ fontSize:14, color:C.textPri }}>{h.name}</div>
+                <div style={{ fontSize:11, color:C.textDim }}>{h.sub} · +{h.xp} XP</div>
               </div>
-              <button onClick={() => onDeleteCustom(h.id)} style={{ ...S.btnSm, color:'#e74c3c', borderColor:'#fdd' }}>✕</button>
+              <button onClick={() => onDeleteCustom(h.id)} style={{ ...S.btnSm, color:C.red, borderColor:'rgba(231,76,60,0.3)' }}>✕</button>
             </div>
           ))
         }
       </div>
+
       {show && (
         <div style={S.modalBg}><div style={S.modalBox}>
-          <div style={{ fontSize:15, fontWeight:600, marginBottom:12 }}>Neuen Habit erstellen</div>
+          <div style={{ fontSize:15, fontWeight:600, marginBottom:12, color:C.textPri }}>Neuen Habit erstellen</div>
           <input style={S.input} placeholder="Name (z.B. Journaling)" value={name} onChange={e=>setName(e.target.value)} />
           <input style={{ ...S.input, marginTop:8 }} type="number" placeholder="XP-Wert (z.B. 25)" value={xpVal} onChange={e=>setXpVal(e.target.value)} />
           <input style={{ ...S.input, marginTop:8, marginBottom:14 }} placeholder="Stat: Stärke / Fokus / Ausdauer / Disziplin" value={statVal} onChange={e=>setStatVal(e.target.value)} />
@@ -323,7 +364,9 @@ function PageHabits({ state, onTogglePreset, onAddCustom, onDeleteCustom }) {
           </div>
         </div></div>
       )}
-      <button style={{ ...S.btnPri, width:'100%', padding:'11px 0', borderRadius:10, cursor:'pointer', fontSize:14, fontFamily:'inherit' }} onClick={()=>setShow(true)}>+ Eigenen Habit hinzufügen</button>
+      <button style={{ ...S.btnPri, width:'100%', padding:'11px 0', borderRadius:10, cursor:'pointer', fontSize:14, fontFamily:'inherit' }} onClick={()=>setShow(true)}>
+        + Eigenen Habit hinzufügen
+      </button>
     </div>
   )
 }
@@ -340,14 +383,15 @@ function PageGoals({ state, onAddGoal, onDeleteGoal, onToggleDone }) {
   }
   return (
     <div>
-      <div style={{ background:'linear-gradient(135deg,#F0EFFE,#EEF0FF)', borderRadius:14, padding:'1.25rem', marginBottom:12, textAlign:'center' }}>
-        <div style={{ fontSize:28, marginBottom:6 }}>🎯</div>
-        <div style={{ fontSize:16, fontWeight:700 }}>Deine Ziele</div>
-        <div style={{ fontSize:13, color:'#888', marginTop:4 }}>Setze klare Meilensteine – keine Habits, sondern Ziele die du einmalig erreichst.</div>
+      <div style={{ background:`linear-gradient(135deg,${C.navy},#0e1a2e)`, borderRadius:16, padding:'1.25rem', marginBottom:12, textAlign:'center', border:`1px solid ${C.border}` }}>
+        <div style={{ fontSize:32, marginBottom:8 }}>🎯</div>
+        <div style={{ fontSize:16, fontWeight:700, color:C.textPri }}>Deine Ziele</div>
+        <div style={{ fontSize:13, color:C.textSec, marginTop:6, lineHeight:1.5 }}>Setze klare Meilensteine – keine Habits, sondern Ziele die du einmalig erreichst.</div>
       </div>
+
       {showAdd && (
         <div style={S.modalBg}><div style={S.modalBox}>
-          <div style={{ fontSize:15, fontWeight:600, marginBottom:12 }}>Neues Ziel</div>
+          <div style={{ fontSize:15, fontWeight:600, marginBottom:12, color:C.textPri }}>Neues Ziel</div>
           <input style={S.input} placeholder="Dein Ziel (z.B. 10kg abnehmen)" value={text} onChange={e=>setText(e.target.value)} />
           <input style={{ ...S.input, marginTop:8, marginBottom:14 }} placeholder="Notiz – bis wann, warum? (optional)" value={note} onChange={e=>setNote(e.target.value)} />
           <div style={{ display:'flex', gap:8 }}>
@@ -356,33 +400,39 @@ function PageGoals({ state, onAddGoal, onDeleteGoal, onToggleDone }) {
           </div>
         </div></div>
       )}
-      <button style={{ ...S.btnPri, width:'100%', padding:'11px 0', borderRadius:10, cursor:'pointer', fontSize:14, fontFamily:'inherit', marginBottom:12 }} onClick={()=>setShowAdd(true)}>+ Neues Ziel hinzufügen</button>
+
+      <button style={{ ...S.btnPri, width:'100%', padding:'11px 0', borderRadius:10, cursor:'pointer', fontSize:14, fontFamily:'inherit', marginBottom:12 }} onClick={()=>setShowAdd(true)}>
+        + Neues Ziel hinzufügen
+      </button>
+
       {openGoals.length === 0 && doneGoals.length === 0 && <div style={S.card}><div style={S.empty}>Noch keine Ziele gesetzt.<br/>Füge dein erstes Ziel hinzu!</div></div>}
+
       {openGoals.map(g => (
-        <div key={g.id} style={{ ...S.card, borderLeft:'3px solid #7F77DD' }}>
+        <div key={g.id} style={S.cardGoal}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
             <div style={{ flex:1 }}>
-              <div style={{ fontSize:14, fontWeight:500 }}>{g.text}</div>
-              {g.note && <div style={{ fontSize:12, color:'#888', marginTop:3 }}>{g.note}</div>}
-              <div style={{ fontSize:11, color:'#ccc', marginTop:4 }}>Erstellt: {g.createdAt}</div>
+              <div style={{ fontSize:14, fontWeight:500, color:C.textPri }}>{g.text}</div>
+              {g.note && <div style={{ fontSize:12, color:C.textSec, marginTop:3 }}>{g.note}</div>}
+              <div style={{ fontSize:11, color:C.textDim, marginTop:5 }}>Erstellt: {g.createdAt}</div>
             </div>
             <div style={{ display:'flex', gap:6, marginLeft:10, flexShrink:0 }}>
               <button onClick={() => onToggleDone(g.id)} style={{ ...S.btnSm, ...S.btnDone, fontSize:11 }}>✓ Erreicht</button>
-              <button onClick={() => onDeleteGoal(g.id)} style={{ ...S.btnSm, color:'#e74c3c', borderColor:'#fdd', fontSize:11 }}>✕</button>
+              <button onClick={() => onDeleteGoal(g.id)} style={{ ...S.btnSm, color:C.red, borderColor:'rgba(231,76,60,0.3)', fontSize:11 }}>✕</button>
             </div>
           </div>
         </div>
       ))}
+
       {doneGoals.length > 0 && <>
         <div style={S.secTitle}>✅ Erreichte Ziele</div>
         {doneGoals.map(g => (
-          <div key={g.id} style={{ ...S.card, opacity:.6 }}>
+          <div key={g.id} style={{ ...S.card, opacity:.4 }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
               <div>
-                <div style={{ fontSize:14, textDecoration:'line-through' }}>{g.text}</div>
-                {g.note && <div style={{ fontSize:12, color:'#888', marginTop:2 }}>{g.note}</div>}
+                <div style={{ fontSize:14, color:C.textSec, textDecoration:'line-through' }}>{g.text}</div>
+                {g.note && <div style={{ fontSize:12, color:C.textDim, marginTop:2 }}>{g.note}</div>}
               </div>
-              <button onClick={() => onDeleteGoal(g.id)} style={{ ...S.btnSm, color:'#e74c3c', borderColor:'#fdd', fontSize:11 }}>✕</button>
+              <button onClick={() => onDeleteGoal(g.id)} style={{ ...S.btnSm, color:C.red, borderColor:'rgba(231,76,60,0.3)', fontSize:11 }}>✕</button>
             </div>
           </div>
         ))}
@@ -398,7 +448,7 @@ function PageQuests({ state, onToggleQuest }) {
     <div>
       <div style={{ display:'flex', gap:6, marginBottom:12 }}>
         {['solo','social'].map(t => (
-          <button key={t} onClick={()=>setTab(t)} style={{ flex:1, padding:'9px 0', borderRadius:10, border:'0.5px solid #e0e0e0', background:tab===t?'#EEEDFE':'transparent', color:tab===t?'#3C3489':'#888', fontWeight:tab===t?600:400, cursor:'pointer', fontSize:13, fontFamily:'inherit' }}>
+          <button key={t} onClick={()=>setTab(t)} style={{ flex:1, padding:'9px 0', borderRadius:10, border:`1px solid ${t===tab?C.gold:C.border}`, background:t===tab?'rgba(201,168,76,0.1)':'transparent', color:t===tab?C.gold:C.textSec, fontWeight:t===tab?600:400, cursor:'pointer', fontSize:13, fontFamily:'inherit' }}>
             {t==='solo' ? '👤 Solo' : '👥 Sozial'}
           </button>
         ))}
@@ -412,18 +462,18 @@ function PageQuests({ state, onToggleQuest }) {
             <div style={{ display:'flex', gap:10, marginBottom:8 }}>
               <span style={{ fontSize:22, flexShrink:0 }}>{q.icon}</span>
               <div>
-                <div style={{ fontSize:14, fontWeight:600 }}>{q.title}</div>
-                <div style={{ fontSize:12, color:'#888', marginTop:2, lineHeight:1.4 }}>{q.desc}</div>
+                <div style={{ fontSize:14, fontWeight:600, color:C.textPri }}>{q.title}</div>
+                <div style={{ fontSize:12, color:C.textSec, marginTop:2, lineHeight:1.4 }}>{q.desc}</div>
               </div>
             </div>
             {qs.active && q.total > 1 && <>
               <div style={S.progWrap}><div style={{ ...S.progBar, width:pct+'%' }} /></div>
-              <div style={{ fontSize:11, color:'#aaa', marginTop:4, marginBottom:6 }}>{qs.prog} / {q.total} Tage</div>
+              <div style={{ fontSize:11, color:C.textDim, marginTop:4, marginBottom:6 }}>{qs.prog} / {q.total} Tage</div>
             </>}
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:6 }}>
-              <span style={{ fontSize:11, padding:'2px 9px', borderRadius:99, background:DIFF_COLOR[q.diff], color:DIFF_TEXT[q.diff], fontWeight:500 }}>{DIFF_LABEL[q.diff]}</span>
+              <span style={{ fontSize:11, padding:'2px 9px', borderRadius:99, background:DIFF_BG[q.diff], color:DIFF_TEXT[q.diff], fontWeight:600 }}>{DIFF_LABEL[q.diff]}</span>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <span style={S.bPurple}>+{q.xp} XP</span>
+                <span style={S.bGold}>+{q.xp} XP</span>
                 {completed
                   ? <span style={{ ...S.btnSm, ...S.btnDone }}>Abgeschlossen ✓</span>
                   : <button onClick={() => onToggleQuest(q)} style={{ ...S.btnSm, ...(qs.active?S.btnActive:{}) }}>
@@ -444,51 +494,55 @@ function PageMindset({ todayQuote }) {
   return (
     <div>
       <div style={S.secTitle}>💬 Tages-Quote</div>
-      <div style={{ background:'linear-gradient(135deg,#F0EFFE,#EEF0FF)', borderLeft:'3px solid #7F77DD', borderRadius:14, padding:'1.1rem 1.25rem', marginBottom:10 }}>
-        <div style={{ fontSize:15, fontStyle:'italic', lineHeight:1.7 }}>"{todayQuote.text}"</div>
-        <div style={{ fontSize:12, color:'#888', marginTop:8 }}>— {todayQuote.author}</div>
+      <div style={{ background:`linear-gradient(135deg,${C.navy},#0e1a2e)`, borderLeft:`3px solid ${C.gold}`, borderRadius:14, padding:'1.1rem 1.25rem', marginBottom:10, border:`1px solid ${C.border}`, borderLeftColor:C.gold }}>
+        <div style={{ fontSize:15, fontStyle:'italic', lineHeight:1.8, color:C.textPri }}>"{todayQuote.text}"</div>
+        <div style={{ fontSize:12, color:C.gold, marginTop:8 }}>— {todayQuote.author}</div>
       </div>
+
       <div style={S.secTitle}>🎩 Gentleman-Tipps</div>
       <div style={S.card}>
         <div style={{ display:'flex', gap:12 }}>
-          <span style={{ fontSize:22, flexShrink:0 }}>{GENT_TIPS[gi].icon}</span>
+          <span style={{ fontSize:24, flexShrink:0 }}>{GENT_TIPS[gi].icon}</span>
           <div>
-            <div style={{ fontSize:14, fontWeight:600 }}>{GENT_TIPS[gi].title}</div>
-            <div style={{ fontSize:13, color:'#555', marginTop:4, lineHeight:1.6 }}>{GENT_TIPS[gi].body}</div>
+            <div style={{ fontSize:14, fontWeight:600, color:C.textPri }}>{GENT_TIPS[gi].title}</div>
+            <div style={{ fontSize:13, color:C.textSec, marginTop:5, lineHeight:1.7 }}>{GENT_TIPS[gi].body}</div>
           </div>
         </div>
-        <div style={{ display:'flex', justifyContent:'space-between', marginTop:12 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', marginTop:14 }}>
           <button style={S.btnSm} onClick={() => setGi(i => (i-1+GENT_TIPS.length)%GENT_TIPS.length)}>← Vorheriger</button>
-          <span style={{ fontSize:11, color:'#ccc', alignSelf:'center' }}>{gi+1} / {GENT_TIPS.length}</span>
+          <span style={{ fontSize:11, color:C.textDim, alignSelf:'center' }}>{gi+1} / {GENT_TIPS.length}</span>
           <button style={S.btnSm} onClick={() => setGi(i => (i+1)%GENT_TIPS.length)}>Nächster →</button>
         </div>
       </div>
+
       <div style={S.secTitle}>🌿 Inner Peace</div>
       <div style={S.card}>
         <div style={{ display:'flex', gap:12 }}>
-          <span style={{ fontSize:22, flexShrink:0 }}>{PEACE_TIPS[pi].icon}</span>
+          <span style={{ fontSize:24, flexShrink:0 }}>{PEACE_TIPS[pi].icon}</span>
           <div>
-            <div style={{ fontSize:14, fontWeight:600 }}>{PEACE_TIPS[pi].title}</div>
-            <div style={{ fontSize:13, color:'#555', marginTop:4, lineHeight:1.6 }}>{PEACE_TIPS[pi].body}</div>
+            <div style={{ fontSize:14, fontWeight:600, color:C.textPri }}>{PEACE_TIPS[pi].title}</div>
+            <div style={{ fontSize:13, color:C.textSec, marginTop:5, lineHeight:1.7 }}>{PEACE_TIPS[pi].body}</div>
           </div>
         </div>
-        <div style={{ display:'flex', justifyContent:'space-between', marginTop:12 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', marginTop:14 }}>
           <button style={S.btnSm} onClick={() => setPi(i => (i-1+PEACE_TIPS.length)%PEACE_TIPS.length)}>← Vorheriger</button>
-          <span style={{ fontSize:11, color:'#ccc', alignSelf:'center' }}>{pi+1} / {PEACE_TIPS.length}</span>
+          <span style={{ fontSize:11, color:C.textDim, alignSelf:'center' }}>{pi+1} / {PEACE_TIPS.length}</span>
           <button style={S.btnSm} onClick={() => setPi(i => (i+1)%PEACE_TIPS.length)}>Nächster →</button>
         </div>
       </div>
+
       <div style={S.secTitle}>📖 Alle Quotes</div>
       {QUOTES.map((q,i) => (
-        <div key={i} style={{ ...S.card, borderLeft:'2px solid #ebebeb' }}>
-          <div style={{ fontSize:13, fontStyle:'italic', color:'#333', lineHeight:1.6 }}>"{q.text}"</div>
-          <div style={{ fontSize:11, color:'#bbb', marginTop:5 }}>— {q.author}</div>
+        <div key={i} style={{ ...S.card, borderLeft:`2px solid ${C.border}` }}>
+          <div style={{ fontSize:13, fontStyle:'italic', color:C.textSec, lineHeight:1.7 }}>"{q.text}"</div>
+          <div style={{ fontSize:11, color:C.textDim, marginTop:5 }}>— {q.author}</div>
         </div>
       ))}
     </div>
   )
 }
 
+// ── Main App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState('today')
   const [state, setState] = useState(initialState)
@@ -554,18 +608,33 @@ export default function App() {
   const allHabits = [...PRESET_HABITS, ...state.customHabits]
   const allQuests = [...SOLO_QUESTS, ...SOCIAL_QUESTS]
   const activeQuests = allQuests.filter(q=>state.quests[q.id]?.active).map(q=>({...q, prog:state.quests[q.id]?.prog||0}))
-  const NAV = [{ id:'today',label:'Heute',icon:'🏠'},{ id:'habits',label:'Habits',icon:'✅'},{ id:'goals',label:'Ziele',icon:'🎯'},{ id:'quests',label:'Quests',icon:'⚔️'},{ id:'mindset',label:'Mindset',icon:'🔥'}]
+
+  const NAV = [
+    { id:'today',   label:'Heute',   icon:'🏠' },
+    { id:'habits',  label:'Habits',  icon:'✅' },
+    { id:'goals',   label:'Ziele',   icon:'🎯' },
+    { id:'quests',  label:'Quests',  icon:'⚔️' },
+    { id:'mindset', label:'Mindset', icon:'🔥' },
+  ]
 
   return (
-    <div style={{ maxWidth:440, margin:'0 auto', padding:'1rem', paddingBottom:90, fontFamily:'-apple-system,system-ui,sans-serif', color:'#1a1a1a', minHeight:'100vh', background:'#f9f9fb' }}>
-      {toast && <div style={{ background:'linear-gradient(135deg,#9B8FFF,#534AB7)', color:'white', padding:'9px 18px', borderRadius:99, fontSize:13, fontWeight:500, textAlign:'center', marginBottom:12, boxShadow:'0 2px 12px rgba(127,119,221,.3)' }}>{toast}</div>}
-      <div style={{ display:'flex', background:'#fff', border:'0.5px solid #ebebeb', borderRadius:14, padding:4, gap:3, marginBottom:16, boxShadow:'0 1px 4px rgba(0,0,0,.05)' }}>
+    <div style={{ maxWidth:440, margin:'0 auto', padding:'1rem', paddingBottom:90, fontFamily:'-apple-system,system-ui,sans-serif', color:C.textPri, minHeight:'100vh', background:C.bg }}>
+      {toast && (
+        <div style={{ background:`linear-gradient(135deg,${C.teal},${C.goldDim})`, color:'white', padding:'9px 18px', borderRadius:99, fontSize:13, fontWeight:600, textAlign:'center', marginBottom:12, boxShadow:`0 4px 16px rgba(201,168,76,0.25)` }}>
+          {toast}
+        </div>
+      )}
+
+      {/* Bottom Nav */}
+      <div style={{ position:'fixed', bottom:0, left:'50%', transform:'translateX(-50%)', width:'100%', maxWidth:440, background:C.bgCard, borderTop:`1px solid ${C.border}`, padding:'6px 8px', display:'flex', gap:3, zIndex:100 }}>
         {NAV.map(n => (
-          <button key={n.id} onClick={()=>setPage(n.id)} style={{ flex:1, padding:'7px 2px', border:'none', borderRadius:10, background:page===n.id?'#F0EFFE':'transparent', cursor:'pointer', fontSize:10, color:page===n.id?'#534AB7':'#bbb', fontWeight:page===n.id?700:400, display:'flex', flexDirection:'column', alignItems:'center', gap:3, fontFamily:'inherit' }}>
-            <span style={{ fontSize:17 }}>{n.icon}</span>{n.label}
+          <button key={n.id} onClick={()=>setPage(n.id)} style={{ flex:1, padding:'7px 2px', border:'none', borderRadius:10, background:page===n.id?`rgba(201,168,76,0.12)`:'transparent', cursor:'pointer', fontSize:10, color:page===n.id?C.gold:C.textDim, fontWeight:page===n.id?700:400, display:'flex', flexDirection:'column', alignItems:'center', gap:3, fontFamily:'inherit', transition:'all .15s' }}>
+            <span style={{ fontSize:18 }}>{n.icon}</span>
+            {n.label}
           </button>
         ))}
       </div>
+
       {page==='today'   && <PageToday   state={state} allHabits={allHabits} onCheck={checkHabit} activeQuests={activeQuests} onDailyDone={doDailyQuest} dailyQuests={dailyQuests} />}
       {page==='habits'  && <PageHabits  state={state} onTogglePreset={togglePreset} onAddCustom={addCustom} onDeleteCustom={deleteCustom} />}
       {page==='goals'   && <PageGoals   state={state} onAddGoal={addGoal} onDeleteGoal={deleteGoal} onToggleDone={toggleGoalDone} />}
