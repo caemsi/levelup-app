@@ -38,6 +38,7 @@ const PRESET_HABITS = [
   { id:'p12', name:'10.000 Schritte',             sub:'Ausdauer +2',  xp:40,  stat:'agi' },
   { id:'p13', name:'Dankbarkeit aufschreiben',    sub:'Fokus +1',     xp:15,  stat:'foc' },
   { id:'p14', name:'Kein Koffein nach 14 Uhr',   sub:'Disziplin +1', xp:15,  stat:'dis' },
+  { id:'p15',  name:'30min lernen',              sub:'Fokus +1',     xp:25,  stat:'foc' },
 ]
 
 const SOLO_QUESTS = [
