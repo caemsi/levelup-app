@@ -92,6 +92,13 @@ const ALL_DAILY_QUESTS = [
   { id:'d19', title:'Proteinreiches Essen',        desc:'Stell sicher dass du heute genug Protein isst.',      icon:'🥩', xp:15 },
   { id:'d20', title:'Kaltes Wasser morgens',       desc:'Spritz dir kaltes Wasser ins Gesicht. Wach werden.',  icon:'🚿', xp:10 },
   { id:'d21', title:'Etwas Inspirierendes lesen',  desc:'10 Seiten Buch oder ein guter Artikel.',              icon:'📚', xp:15 },
+  { id:'ip1', title:'Stoizismus: Lass los was du nicht kontrollieren kannst.', desc:'Frage dich heute bei jedem Problem: Liegt das in meiner Kontrolle?', icon:'🌬️', xp:15 },
+  { id:'ip2', title:'Starte den Tag ohne Handy.', desc:'10 Minuten Stille, ein Glas Wasser, eine klare Absicht für den Tag.', icon:'🌙', xp:15 },
+  { id:'ip3', title:'Weniger besitzen, mehr erleben.', desc:'Räum heute eine Sache weg die du nicht brauchst.', icon:'🍃', xp:15 },
+  { id:'ip4', title:'Mach eine Sache – gib ihr deine volle Aufmerksamkeit.', desc:'Eine Stunde lang nur eine Aufgabe, kein Multitasking.', icon:'🎯', xp:20 },
+  { id:'ip5', title:'In einem Jahr wird das irrelevant sein.', desc:'Atme durch. Was dich heute stresst ist morgen kleiner.', icon:'🏔️', xp:15 },
+  { id:'ip6', title:'10 Minuten Natur als Reset.', desc:'Raus gehen, tief atmen, Boden spüren.', icon:'☀️', xp:15 },
+  { id:'ip7', title:'Behandle dich wie deinen besten Freund.', desc:'Du machst Fehler. Das ist menschlich. Sei gut zu dir.', icon:'🤍', xp:15 },
 ]
 
 const QUOTES = [
@@ -242,12 +249,17 @@ function HabitRow({ habit, done, onCheck }) {
 }
 
 // ── Pages ─────────────────────────────────────────────────────────────────────
-function PageToday({ state, allHabits, onCheck, activeQuests, onDailyDone, dailyQuests }) {
+function PageToday({ state, allHabits, onCheck, activeQuests, onDailyDone, dailyQuests, todayQuote }) {
   const activeHabitObjects = allHabits.filter(h => state.activeHabits.includes(h.id))
   const openGoals = (state.goals||[]).filter(g => !g.done)
   return (
     <div>
       <XPBar {...state} />
+      <div style={{ background:`linear-gradient(135deg,${C.navy},#0e1a2e)`, borderLeft:`3px solid ${C.gold}`, borderRadius:14, padding:'1rem 1.25rem', marginBottom:10, border:`1px solid ${C.border}`, borderLeftColor:C.gold }}>
+        <div style={{ fontSize:10, fontWeight:600, color:C.gold, letterSpacing:'.1em', marginBottom:6 }}>QUOTE DES TAGES</div>
+        <div style={{ fontSize:14, fontStyle:'italic', lineHeight:1.7, color:C.textPri }}>"{todayQuote.text}"</div>
+        <div style={{ fontSize:11, color:C.textSec, marginTop:6 }}>— {todayQuote.author}</div>
+      </div>
       {openGoals.length > 0 && <>
         <div style={S.secTitle}>🎯 Meine Ziele</div>
         {openGoals.map(g => (
@@ -490,59 +502,6 @@ function PageQuests({ state, onToggleQuest }) {
   )
 }
 
-function PageMindset({ todayQuote }) {
-  const [gi, setGi] = useState(0); const [pi, setPi] = useState(0)
-  return (
-    <div>
-      <div style={S.secTitle}>💬 Tages-Quote</div>
-      <div style={{ background:`linear-gradient(135deg,${C.navy},#0e1a2e)`, borderLeft:`3px solid ${C.gold}`, borderRadius:14, padding:'1.1rem 1.25rem', marginBottom:10, border:`1px solid ${C.border}`, borderLeftColor:C.gold }}>
-        <div style={{ fontSize:15, fontStyle:'italic', lineHeight:1.8, color:C.textPri }}>"{todayQuote.text}"</div>
-        <div style={{ fontSize:12, color:C.gold, marginTop:8 }}>— {todayQuote.author}</div>
-      </div>
-
-      <div style={S.secTitle}>🎩 Gentleman-Tipps</div>
-      <div style={S.card}>
-        <div style={{ display:'flex', gap:12 }}>
-          <span style={{ fontSize:24, flexShrink:0 }}>{GENT_TIPS[gi].icon}</span>
-          <div>
-            <div style={{ fontSize:14, fontWeight:600, color:C.textPri }}>{GENT_TIPS[gi].title}</div>
-            <div style={{ fontSize:13, color:C.textSec, marginTop:5, lineHeight:1.7 }}>{GENT_TIPS[gi].body}</div>
-          </div>
-        </div>
-        <div style={{ display:'flex', justifyContent:'space-between', marginTop:14 }}>
-          <button style={S.btnSm} onClick={() => setGi(i => (i-1+GENT_TIPS.length)%GENT_TIPS.length)}>← Vorheriger</button>
-          <span style={{ fontSize:11, color:C.textDim, alignSelf:'center' }}>{gi+1} / {GENT_TIPS.length}</span>
-          <button style={S.btnSm} onClick={() => setGi(i => (i+1)%GENT_TIPS.length)}>Nächster →</button>
-        </div>
-      </div>
-
-      <div style={S.secTitle}>🌿 Inner Peace</div>
-      <div style={S.card}>
-        <div style={{ display:'flex', gap:12 }}>
-          <span style={{ fontSize:24, flexShrink:0 }}>{PEACE_TIPS[pi].icon}</span>
-          <div>
-            <div style={{ fontSize:14, fontWeight:600, color:C.textPri }}>{PEACE_TIPS[pi].title}</div>
-            <div style={{ fontSize:13, color:C.textSec, marginTop:5, lineHeight:1.7 }}>{PEACE_TIPS[pi].body}</div>
-          </div>
-        </div>
-        <div style={{ display:'flex', justifyContent:'space-between', marginTop:14 }}>
-          <button style={S.btnSm} onClick={() => setPi(i => (i-1+PEACE_TIPS.length)%PEACE_TIPS.length)}>← Vorheriger</button>
-          <span style={{ fontSize:11, color:C.textDim, alignSelf:'center' }}>{pi+1} / {PEACE_TIPS.length}</span>
-          <button style={S.btnSm} onClick={() => setPi(i => (i+1)%PEACE_TIPS.length)}>Nächster →</button>
-        </div>
-      </div>
-
-      <div style={S.secTitle}>📖 Alle Quotes</div>
-      {QUOTES.map((q,i) => (
-        <div key={i} style={{ ...S.card, borderLeft:`2px solid ${C.border}` }}>
-          <div style={{ fontSize:13, fontStyle:'italic', color:C.textSec, lineHeight:1.7 }}>"{q.text}"</div>
-          <div style={{ fontSize:11, color:C.textDim, marginTop:5 }}>— {q.author}</div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 // ── Main App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState('today')
@@ -615,7 +574,6 @@ export default function App() {
     { id:'habits',  label:'Habits',  icon:'✅' },
     { id:'goals',   label:'Ziele',   icon:'🎯' },
     { id:'quests',  label:'Quests',  icon:'⚔️' },
-    { id:'mindset', label:'Mindset', icon:'🔥' },
   ]
 
   return (
@@ -636,11 +594,10 @@ export default function App() {
         ))}
       </div>
 
-      {page==='today'   && <PageToday   state={state} allHabits={allHabits} onCheck={checkHabit} activeQuests={activeQuests} onDailyDone={doDailyQuest} dailyQuests={dailyQuests} />}
+      {page==='today'   && <PageToday   state={state} allHabits={allHabits} onCheck={checkHabit} activeQuests={activeQuests} onDailyDone={doDailyQuest} dailyQuests={dailyQuests} todayQuote={todayQuote} />}
       {page==='habits'  && <PageHabits  state={state} onTogglePreset={togglePreset} onAddCustom={addCustom} onDeleteCustom={deleteCustom} />}
       {page==='goals'   && <PageGoals   state={state} onAddGoal={addGoal} onDeleteGoal={deleteGoal} onToggleDone={toggleGoalDone} />}
       {page==='quests'  && <PageQuests  state={state} onToggleQuest={toggleQuest} />}
-      {page==='mindset' && <PageMindset todayQuote={todayQuote} />}
     </div>
   )
 }
